@@ -8,16 +8,16 @@ public class CountdownManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI countdownText;
     [SerializeField] private CanvasGroup canvasGroup;
 
-    [Header("対象オブジェクト")]
-    [SerializeField] private GameObject carController;
+    [Header("操作ロック/解禁先")]
+    [SerializeField] private RaceStartGate raceStartGate; // ← ここに車の RaceStartGate を割り当て
 
-    [Header("設定値")]
+    [Header("表示設定")]
     public float interval = 0.2f;
     public float fadeTime = 0.3f;
 
     private void Awake()
     {
-        // 未設定なら自動取得
+        // 未設定ならUI自動取得
         if (countdownText == null)
             countdownText = GetComponentInChildren<TextMeshProUGUI>(true);
 
@@ -25,21 +25,24 @@ public class CountdownManager : MonoBehaviour
         {
             if (canvasGroup == null)
                 canvasGroup = countdownText.GetComponent<CanvasGroup>();
-
             if (canvasGroup == null)
                 canvasGroup = countdownText.gameObject.AddComponent<CanvasGroup>();
-
             canvasGroup.alpha = 0f; // 初期は透明
         }
         else
         {
-            Debug.LogError("[CountdownManager] TextMeshProUGUIが見つかりません。Inspectorで割り当てるか、階層を確認してください。");
+            Debug.LogError("[CountdownManager] TextMeshProUGUIが見つかりません。");
         }
+
+        // RaceStartGate が未設定ならシーンから探す（念のため）
+        if (raceStartGate == null)
+            raceStartGate = FindObjectOfType<RaceStartGate>(true);
     }
 
     private void Start()
     {
-        if (carController != null) carController.SetActive(false);
+        // カウントダウン開始前にロック
+        if (raceStartGate != null) raceStartGate.LockControls();
         StartCoroutine(CountdownSequence());
     }
 
@@ -51,12 +54,12 @@ public class CountdownManager : MonoBehaviour
         yield return StartCoroutine(ShowText("1"));
         yield return StartCoroutine(ShowText("GO!", 0.8f));
 
-        if (carController != null) carController.SetActive(true);
+        // GOの瞬間に解禁
+        if (raceStartGate != null) raceStartGate.UnlockControls();
     }
 
     private IEnumerator ShowText(string text, float customInterval = -1f)
     {
-        // 念のためnullガード
         if (countdownText == null || canvasGroup == null) yield break;
 
         countdownText.text = text;
