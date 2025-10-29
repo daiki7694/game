@@ -6,9 +6,9 @@ public class SpeedometerUI : MonoBehaviour
     public Rigidbody targetRigidbody;
     public TMP_Text speedText;
 
-    [Range(0, 2)] public int decimalDigits = 0;  // 0=æ•´æ•°è¡¨ç¤º
-    public float msToKmh = 3.6f;                 // m/s â†’ km/h ä¿‚æ•°
-    public string suffix = " km/h";              // è¡¨ç¤ºã®å˜ä½
+    [Range(0, 2)] public int decimalDigits = 0;  // 0=®”•\¦
+    public float msToKmh = 3.6f;                 // m/s ¨ km/h ŒW”
+    public string suffix = " km/h";              // •\¦‚Ì’PˆÊ
 
     void Reset()
     {
